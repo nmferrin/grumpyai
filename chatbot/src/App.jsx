@@ -40,6 +40,34 @@ function App() {
     setConversations(prevConversations => [...prevConversations, newConversation]);
   };
 
+  const renameConversation = async (id, newName) => {
+    try {
+      await axios.put(`http://localhost:3000/conversations/${id}`, { name: newName }, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setConversations(prevConversations => prevConversations.map(conv => 
+        conv.id === id ? { ...conv, name: newName } : conv
+      ));
+    } catch (error) {
+      console.error('Error renaming conversation', error);
+    }
+  };
+
+  const deleteConversation = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3000/conversations/${id}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      setConversations(prevConversations => prevConversations.filter(conv => conv.id !== id));
+      if (selectedConversationId === id) {
+        setSelectedConversationId(null);
+        setChatHistory([initialSystemMessage]);
+      }
+    } catch (error) {
+      console.error('Error deleting conversation', error);
+    }
+  };
+
   const fetchData = async () => {
     setLoading(true);
     const newChatHistory = [
@@ -160,6 +188,8 @@ function App() {
         onSelectConversation={handleConversationSelect}
         onNewConversation={handleNewConversation}
         onLogout={handleLogout}
+        onRenameConversation={renameConversation}
+        onDeleteConversation={deleteConversation}
       />
       <div style={{ flex: 1 }}>
         <Header>

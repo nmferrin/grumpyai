@@ -24,7 +24,7 @@ app.use(authApp);
 app.get('/conversations', authenticateToken, async (req, res) => {
   const userId = req.user.userId;
   try {
-    const result = await pool.query('SELECT id, created_at FROM conversations WHERE user_id = $1', [userId]);
+    const result = await pool.query('SELECT id, created_at, name FROM conversations WHERE user_id = $1', [userId]);
     res.json(result.rows);
   } catch (error) {
     console.error(error);
@@ -59,6 +59,34 @@ app.post('/chat', authenticateToken, async (req, res) => {
     );
 
     res.json({ assistantMessage, conversationId: convId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.put('/conversations/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  const userId = req.user.userId;
+
+  try {
+    await pool.query('UPDATE conversations SET name = $1 WHERE id = $2 AND user_id = $3', [name, id, userId]);
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.delete('/conversations/:id', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.userId;
+
+  try {
+    await pool.query('DELETE FROM chats WHERE conversation_id = $1 AND user_id = $2', [id, userId]);
+    await pool.query('DELETE FROM conversations WHERE id = $1 AND user_id = $2', [id, userId]);
+    res.sendStatus(200);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });

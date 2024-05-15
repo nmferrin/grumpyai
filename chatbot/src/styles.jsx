@@ -145,15 +145,23 @@ export const AuthButton = styled.button`
 `;
 
 export const Sidebar = styled.div`
-  width: 250px;
+  width: 270px;
   background-color: #1e1e2e;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 20px;
+  padding: 0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   height: 100vh;
   position: fixed;
+  overflow-y: auto;
+  overflow-x: hidden;
+`;
+
+export const ProfileSection = styled.div`
+  width: 100%;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 `;
 
 export const ProfileDropdown = styled.div`
@@ -191,4 +199,67 @@ export const ProfileDropdown = styled.div`
       display: block;
     }
   }
+`;
+
+export const ConversationList = styled.ul`
+  width: 90%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  flex-grow: 1;
+`;
+
+export const ConversationItem = styled.li`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  background-color: #1e1e2e;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #2e2e3e;
+  }
+
+  .dropdown {
+    position: relative;
+    display: inline-block;
+
+    button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  }
+`;
+
+export const DropdownContent = styled.div`
+  display: ${({ show }) => (show ? 'block' : 'none')};
+  position: absolute;
+  background-color: #2e2e3e;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-radius: 4px;
+  right: 0;
+
+  a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    &:hover {
+      background-color: #3e3e4e;
+    }
+  }
+`;
+
+export const ShowDropdown = styled(DropdownContent)`
+  display: block;
 `;
