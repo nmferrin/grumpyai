@@ -1,15 +1,11 @@
-// src/styles.js
 import styled from 'styled-components';
 
 export const AppContainer = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+  flex-direction: row;
   min-height: 100vh;
   color: #ffffff;
   font-family: 'Arial', sans-serif;
-  padding: 20px;
 `;
 
 export const Header = styled.header`
@@ -23,18 +19,21 @@ export const Header = styled.header`
 `;
 
 export const ChatBox = styled.div`
-  width: 60%;
-  max-width: 800px;
+  flex: 1;
   background-color: #2e2e3e;
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   overflow-y: auto;
   max-height: 75vh;
+  margin-bottom: 90px; /* Adjusted to avoid overlap with InputContainer */
+  margin-left: auto;
+  margin-right: auto;
+  width: 40%; /* Adjust the width as needed */
 `;
 
 export const InputContainer = styled.div`
-  width: 60%;
+  flex: 1;
   max-width: 800px;
   position: fixed;
   bottom: 20px;
@@ -43,6 +42,9 @@ export const InputContainer = styled.div`
   border-radius: 8px;
   padding: 10px;
   height: 70px;
+  width: calc(100% - 250px); /* Adjusted to account for Sidebar width */
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 export const Input = styled.input`
@@ -69,7 +71,7 @@ export const Button = styled.button`
   font-size: 18px;
 
   &:hover {
-    background-color: #bb86fc;
+    background-color: #a566db;
   }
 
   &:disabled {
@@ -88,5 +90,105 @@ export const Message = styled.p`
 
   strong {
     color: #bb86fc;
+  }
+`;
+
+export const AuthContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #2e2e3e;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+`;
+
+export const AuthForm = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+  background-color: #1e1e2e;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+`;
+
+export const AuthInput = styled.input`
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  background-color: #2e2e3e;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 18px;
+`;
+
+export const AuthButton = styled.button`
+  padding: 10px;
+  background-color: #bb86fc;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #ffffff;
+  transition: background-color 0.3s;
+  font-weight: 500;
+  font-size: 18px;
+  margin-bottom: 10px;
+
+  &:hover {
+    background-color: #a566db;
+  }
+`;
+
+export const Sidebar = styled.div`
+  width: 250px;
+  background-color: #1e1e2e;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  height: 100vh;
+  position: fixed;
+`;
+
+export const ProfileDropdown = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  .dropdown {
+    position: relative;
+    display: inline-block;
+    
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #2e2e3e;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+      border-radius: 4px;
+      right: 0;
+
+      a {
+        color: white;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        &:hover {
+          background-color: #3e3e4e;
+        }
+      }
+    }
+
+    &:hover .dropdown-content {
+      display: block;
+    }
   }
 `;
