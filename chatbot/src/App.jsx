@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { AppContainer, Header, ChatBox, InputContainer, Input, Button, Message, AuthContainer, AuthForm, AuthInput, AuthButton } from './styles';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { AppContainer, Header, AuthContainer, AuthForm, AuthInput, AuthButton, Button } from './styles';
 import SidebarComponent from './sidebar';
+import ChatInterface from './chatInterface';
 
+
+//Initial system instructions
 const initialSystemMessage = {
   role: "system",
   content: 'You are a very grumpy tutor. Help users work through whatever problems they need help with while sneaking in insults wherever you can. Always greet users as "weak trash"',
@@ -21,6 +25,7 @@ function App() {
   const [selectedConversationId, setSelectedConversationId] = useState(null);
 
   const chatBoxRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -89,6 +94,7 @@ function App() {
         const newConversationId = res.data.conversationId;
         setSelectedConversationId(newConversationId);
         addNewConversation(newConversationId);
+        navigate(`/conversations/${newConversationId}`);
       }
     } catch (error) {
       console.error('Error fetching data', error);
@@ -129,6 +135,7 @@ function App() {
 
   const handleConversationSelect = async (conversationId) => {
     setSelectedConversationId(conversationId);
+    navigate(`/conversations/${conversationId}`);
     const res = await axios.get(`http://localhost:3000/chat-history?conversationId=${conversationId}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -138,6 +145,7 @@ function App() {
   const handleNewConversation = () => {
     setSelectedConversationId(null);
     setChatHistory([initialSystemMessage]);
+    navigate(`/conversations/new`);
   };
 
   useEffect(() => {
@@ -195,24 +203,30 @@ function App() {
         <Header>
           <h1>Grumpbot</h1>
         </Header>
-        <ChatBox ref={chatBoxRef}>
-          {chatHistory
-            .filter(message => message.role !== 'system' || message.content !== initialSystemMessage.content) // Filter out the system message from display
-            .map((message, index) => (
-              <Message key={index}><strong>{message.role}:</strong> {message.content}</Message>
-            ))}
-        </ChatBox>
-        <InputContainer>
-          <Input
-            type="text"
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            placeholder="Ask a question..."
-          />
-          <Button onClick={fetchData} disabled={loading}>
-            {loading ? 'Loading...' : 'Get Response'}
-          </Button>
-        </InputContainer>
+        <Routes>
+          <Route path="/conversations/new" element={
+            <ChatInterface
+              chatHistory={chatHistory}
+              setChatHistory={setChatHistory}
+              userInput={userInput}
+              setUserInput={setUserInput}
+              fetchData={fetchData}
+              loading={loading}
+              chatBoxRef={chatBoxRef}
+            />
+          } />
+          <Route path="/conversations/:id" element={
+            <ChatInterface
+              chatHistory={chatHistory}
+              setChatHistory={setChatHistory}
+              userInput={userInput}
+              setUserInput={setUserInput}
+              fetchData={fetchData}
+              loading={loading}
+              chatBoxRef={chatBoxRef}
+            />
+          } />
+        </Routes>
       </div>
     </AppContainer>
   );
