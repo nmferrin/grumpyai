@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { AppContainer, Header, AuthContainer, AuthForm, AuthInput, AuthButton, Button } from './styles';
 import SidebarComponent from './sidebar';
 import ChatInterface from './chatInterface';
 
-
-//Initial system instructions
 const initialSystemMessage = {
   role: "system",
   content: 'You are a very grumpy tutor. Help users work through whatever problems they need help with while sneaking in insults wherever you can. Always greet users as "weak trash"',
 };
 
 function App() {
+  // State variables
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [userInput, setUserInput] = useState('');
@@ -24,9 +23,12 @@ function App() {
   const [conversations, setConversations] = useState([]);
   const [selectedConversationId, setSelectedConversationId] = useState(null);
 
+  // References chat box for scrolling
   const chatBoxRef = useRef(null);
+  // used to navigate different routes
   const navigate = useNavigate();
 
+  // Fetch conversations on authentication
   useEffect(() => {
     if (isAuthenticated) {
       axios.get('http://localhost:3000/conversations', {
@@ -37,6 +39,8 @@ function App() {
     }
   }, [isAuthenticated]);
 
+
+  // Creates new convo
   const addNewConversation = (conversationId) => {
     const newConversation = {
       id: conversationId,
@@ -45,6 +49,7 @@ function App() {
     setConversations(prevConversations => [...prevConversations, newConversation]);
   };
 
+  // Renames conversation
   const renameConversation = async (id, newName) => {
     try {
       await axios.put(`http://localhost:3000/conversations/${id}`, { name: newName }, {
@@ -58,6 +63,7 @@ function App() {
     }
   };
 
+  // Deletes conversation
   const deleteConversation = async (id) => {
     try {
       await axios.delete(`http://localhost:3000/conversations/${id}`, {
@@ -73,6 +79,7 @@ function App() {
     }
   };
 
+  // sends user input/chat history to the backend, updates chat history with response, and handles new convo creation
   const fetchData = async () => {
     setLoading(true);
     const newChatHistory = [
@@ -104,6 +111,7 @@ function App() {
     }
   };
 
+  // manages user login and registration. Fetches history if login successful
   const handleAuth = async () => {
     const endpoint = authMode === 'login' ? 'login' : 'register';
     try {
@@ -125,6 +133,7 @@ function App() {
     }
   };
 
+  // resets authentication-related states
   const handleLogout = () => {
     setToken('');
     setIsAuthenticated(false);
@@ -133,6 +142,7 @@ function App() {
     setSelectedConversationId(null);
   };
 
+  // handles conversation selection and navigation
   const handleConversationSelect = async (conversationId) => {
     setSelectedConversationId(conversationId);
     navigate(`/conversations/${conversationId}`);
@@ -148,6 +158,7 @@ function App() {
     navigate(`/conversations/new`);
   };
 
+  // scrolling effect for chat history
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
@@ -204,6 +215,7 @@ function App() {
           <h1>Grumpbot</h1>
         </Header>
         <Routes>
+          <Route path="/" element={<Navigate to="/conversations/new" />} />
           <Route path="/conversations/new" element={
             <ChatInterface
               chatHistory={chatHistory}

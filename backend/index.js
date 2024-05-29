@@ -5,15 +5,17 @@ const cors = require('cors');
 const { app: authApp, authenticateToken } = require('./auth');
 const pool = require('./db');
 
+//loads environmental variables
 require('dotenv').config();
 
+//creates express app and open ai client
 const app = express();
 const port = 3000;
-
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+//Middleware setup
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(cors());
@@ -32,6 +34,8 @@ app.get('/conversations', authenticateToken, async (req, res) => {
   }
 });
 
+// Handles chat conversation. If no convo id, create a new one. Inserts messages into chats
+//OpenAI returns response and is added to chats. Returns to client
 app.post('/chat', authenticateToken, async (req, res) => {
   const { chatHistory, conversationId } = req.body;
   const userId = req.user.userId;
@@ -65,6 +69,7 @@ app.post('/chat', authenticateToken, async (req, res) => {
   }
 });
 
+// updates conversation name
 app.put('/conversations/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
@@ -79,6 +84,7 @@ app.put('/conversations/:id', authenticateToken, async (req, res) => {
   }
 });
 
+//deletes conversation
 app.delete('/conversations/:id', authenticateToken, async (req, res) => {
   const { id } = req.params;
   const userId = req.user.userId;
@@ -93,6 +99,7 @@ app.delete('/conversations/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// fetches chat history for a specific conversation of an authenticated user
 app.get('/chat-history', authenticateToken, async (req, res) => {
   const userId = req.user.userId;
   const conversationId = req.query.conversationId;
@@ -105,6 +112,7 @@ app.get('/chat-history', authenticateToken, async (req, res) => {
   }
 });
 
+// main function to call openai api
 async function main(chatHistory) {
   const response = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
@@ -118,6 +126,8 @@ async function main(chatHistory) {
   return response.choices[0].message.content;
 }
 
+
+//starts server
 app.listen(port, () => {
   console.log(`Chatbot server running at http://localhost:${port}`);
 });
